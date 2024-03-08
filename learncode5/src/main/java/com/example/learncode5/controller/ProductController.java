@@ -3,13 +3,9 @@ package com.example.learncode5.controller;
 import com.example.learncode5.DTO.ProductDTO;
 import com.example.learncode5.payload.Response.ResponseObject;
 import com.example.learncode5.service.ProductService;
-import com.example.learncode5.service.ProductService2;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @CrossOrigin(origins = "http://localhost:4200")
@@ -22,27 +18,27 @@ public class ProductController {
     }
 
     @GetMapping
-//  @PreAuthorize("hasAuthority('ADMIN')")
+    @PreAuthorize("hasAuthority('ADMIN') || hasAuthority('USER')")
     public ResponseEntity<ResponseObject> getProductList()
     {
         return productService.getProductList();
     }
 
     @DeleteMapping("/{id}")
-//  @PreAuthorize("hasAuthority('ADMIN')")
+    @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<ResponseObject> delete(@PathVariable long id){
         return productService.deleteProductById(id);
     }
 
     @GetMapping("/{product_name}")
-//  @PreAuthorize("hasAuthority('ADMIN')")
+    @PreAuthorize("hasAuthority('ADMIN') || hasAuthority('USER')")
     public ResponseEntity<ResponseObject> get(@PathVariable String product_name)
     {
         return productService.getProductByProductName(product_name);
     }
 
     @PostMapping("/{id}")
-//  @PreAuthorize("hasAuthority('ADMIN')")
+    @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<ResponseObject> update(@PathVariable long id, @RequestBody ProductDTO productDTO)
     {
         Long categoryId = productDTO.getCategory().getId();
@@ -58,6 +54,7 @@ public class ProductController {
     }
 
     @PostMapping("/add")
+    @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<ResponseObject> addProduct(@RequestBody ProductDTO productDTO)
     {
         Long categoryId = productDTO.getCategory().getId();

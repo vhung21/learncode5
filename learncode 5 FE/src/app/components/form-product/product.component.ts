@@ -26,7 +26,6 @@ export class ProductComponent {
   addProduct: Product = new Product();
   alertMessage: string = '';
 
-
   constructor(
     private productService: ProductService,
     private authService: AuthService,
