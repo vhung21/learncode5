@@ -1,0 +1,75 @@
+<section class="vh-100">
+  <div class="container h5 vh-100">
+    <div class="row justify-content-center align-items-center h-100">
+      <div class="col-lg-5 col-xl-6">
+        <div class="card text-black" style="border-radius: 25px;">
+          <div class="card-body p-md-5">
+            <div class="row justify-content-center">
+              <div class="col-md-15 col-lg-9 col-xl-10 order-2 order-lg-1">
+                <p class="text-center h1 fw-bold mb-5 mx-1 mx-md-4 mt-4">Sign In</p>   
+                <form
+                  class="mx-1 mx-md-4"
+                  (ngSubmit)=" f.form.valid && onSubmit()"
+                  novalidate
+                  #f="ngForm"
+                >
+                <div class="d-flex flex-row align-items-center mb-4">
+                  <div class="form-outline flex-fill mb-0">
+                    <label class="form-label" for="form3Example2c">Username</label>
+                      <input 
+                        type="text" 
+                        id="form3Example2c" 
+                        class="form-control"
+                        name="username"
+                        [(ngModel)]="signIn.username"
+                        required
+                        username
+                        #username="ngModel"
+                      />
+                    <div
+                    class="alert-danger"
+                    *ngIf="username.errors && f.submitted"
+                    >
+                    Username is required!
+                    </div>
+                  </div>
+              </div>
+                      <div class="d-flex flex-row align-items-center mb-4">
+                        <div class="form-outline flex-fill mb-0">
+                          <label class="form-label" for="form3Example4c">Password</label>
+                          <input type="password" id="form3Example4c" class="form-control"
+                                 name="password"
+                                 [(ngModel)]="signIn.password"
+                                 required
+                                 #password="ngModel"
+                          />
+                          <div
+                            class="alert-danger"
+                            *ngIf="password.errors && f.submitted"
+                          >
+                            Username is required!
+                          </div>
+                        </div>
+                      </div>
+    
+                      <div
+                        class="d-flex justify-content-center mx-4 mb-3 mb-lg-4"
+                           *ngIf="isSuccessful==false"
+                      >
+                        <p class="alert-danger"> {{errorMessage}}</p>
+                      </div>
+                      <div class="d-flex justify-content-center mx-4 mb-3 mb-lg-4">
+                        <button type="submit" class="btn btn-primary btn-lg">Login</button>
+                      </div>
+                      <div class="d-flex justify-content-center mx-4 mb-3 mb-lg-4">
+                        <a type="type" class="register" [routerLink]="['/register']">Register</a>
+                      </div>
+                    </form>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>

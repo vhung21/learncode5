@@ -1,0 +1,35 @@
+<section style="background-image: url('https://colorlib.com/etc/lf/Login_v5/images/bg-01.jpg'); background-size: cover; background-position: center center; background-repeat: repeat; background-attachment: fixed;">
+
+  <nav class="navbar navbar-expand navbar-dark bg-dark h5" >
+      <a href="#" class="navbar-brand">HN.Shop</a>
+      <ul class="navbar-nav mr-auto" routerLinkActive="active">
+        <li class="nav-item">
+          <a href="/Home" class="nav-link" routerLink="home">Home </a>
+        </li>
+        <li class="nav-item">
+          <a href="/Product" class="nav-link" routerLink="product"> Product </a>
+        </li>
+      </ul>
+
+      <ul class="navbar-nav ml-auto" *ngIf="!isLogin">
+        <li class="nav-item">
+          <a href="/register" class="nav-link" routerLink="register">Sign Up</a>
+        </li>
+        <li class="nav-item">
+          <a href="/login" class="nav-link" routerLink="login">Login</a>
+        </li>
+      </ul>
+
+      <ul class="navbar-nav ml-auto" *ngIf="isLogin">
+        <li class="nav-item">
+          <a href="/home" class="nav-link" routerLink="home">Hello {{infoCurrentUser}} </a>
+        </li>
+        <li class="nav-item">
+          <a href class="nav-link" (click)="logOut()">Logout</a>
+        </li>
+      </ul>
+    </nav>
+    <div class="container-fluid">
+      <router-outlet></router-outlet>
+    </div>
+</section>

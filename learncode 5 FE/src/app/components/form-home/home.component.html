@@ -1,0 +1,236 @@
+<section class="vh-100">
+  <div class="row d-flex justify-center-center align-items-center h-100">
+    <div class="col-lg-15 col-xl-16">
+      <div class="card text-black" style="border-radius: 25px">
+        <div class="card-body p-md-5">
+          <div
+            class="row justify-content-center"
+            style="height: 670px !important"
+          >
+            <div
+              class="col-md-15 col-lg-11 col-xl-12 order-2 order-lg-1"
+              style="height: 600px !important; overflow: auto"
+            >
+              <div
+                class="input-group rounded"
+                style="display: flex; column-gap: 10px; margin-bottom: 10px"
+              >
+                <input
+                  type="search"
+                  class="form-control rounded"
+                  placeholder="Full Name"
+                  aria-label="Search"
+                  aria-describedby="search-addon"
+                  [(ngModel)]="fullNameSearch"
+                />
+                <input
+                  type="search"
+                  class="form-control rounded"
+                  placeholder="Username"
+                  aria-label="Search"
+                  aria-describedby="search-addon"
+                  [(ngModel)]="usernameSearch"
+                />
+                <input
+                  type="search"
+                  class="form-control rounded"
+                  placeholder="Email"
+                  aria-label="Search"
+                  aria-describedby="search-addon"
+                  [(ngModel)]="emailSearch"
+                />
+              </div>
+
+
+              <table class="table table-bordered" *ngIf="isLogin === true">
+                <thead>
+                  <tr class="table-success">
+                    <th class="th-sm">Full Name</th>
+                    <th class="th-sm">Username</th>
+                    <th class="th-sm">Email</th>
+                    <th class="th-sm">Role</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody *ngFor="let user of users">
+                  <tr
+                    *ngIf="
+                      user.fullName.includes(fullNameSearch) &&
+                      user.username.includes(usernameSearch) &&
+                      user.email.includes(emailSearch)
+                    "
+                  >
+                    <td>{{ user.fullName }}</td>
+                    <td>{{ user.username }}</td>
+                    <td>{{ user.email }}</td>
+                    <td>{{ user.roles[0] }}</td>
+                    <td>
+                      <button
+                        type="button"
+                        class="btn btn-primary"
+                        data-bs-toggle="modal"
+                        (click)="onUpdate(user)"
+                        data-bs-target="#staticBackdrop"
+                      >
+                        Update
+                      </button>
+                      <button
+                        type="button"
+                        class="btn btn-danger"
+                        style="margin-left: 10px"
+                        (click)="delete(user)"
+                      >
+                        Delete
+                      </button>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+
+            <div
+              class="modal fade"
+              id="staticBackdrop"
+              data-bs-backdrop="static"
+              data-bs-keyboard="false"
+              tabindex="-1"
+              aria-labelledby="staticBackdropLabel"
+              aria-hidden="true"
+            >
+              <div class="modal-dialog">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title" id="staticBackdropLabel">
+                      Modal title
+                    </h5>
+                    <button
+                      type="button"
+                      class="btn-close"
+                      data-bs-dismiss="modal"
+                      aria-label="Close"
+                    ></button>
+                  </div>
+                  <div class="modal-body">
+                    <form
+                      class="mx-1 mx-md-4"
+                      (ngSubmit)="f.form.valid && onModalSubmit()"
+                      novalidate
+                      #f="ngForm"
+                    >
+                      <div class="d-flex flex-row align-items-center mb-4">
+                        <div class="form-outline flex-fill mb-0">
+                          <label class="form-label" for="x">User Name</label>
+                          <input
+                            id="x"
+                            class="form-control"
+                            name="username"
+                            [placeholder]="userModal.username"
+                            disabled
+                          />
+                        </div>
+                      </div>
+
+                      <div class="d-flex flex-row align-items-center mb-4">
+                        <div class="form-outline flex-fill mb-0">
+                          <label class="form-label" for="fullName_modal"
+                            >Full Name</label
+                          >
+                          <input
+                            id="fullName_modal"
+                            class="form-control"
+                            name="fullName"
+                            [(ngModel)]="updateUser.fullName"
+                            [placeholder]="userModal.fullName"
+                            required
+                            #fullName="ngModel"
+                          />
+
+                          <div
+                            class="alert-danger"
+                            *ngIf="fullName.errors && f.submitted"
+                          >
+                            <div *ngIf="fullName.errors?.['required']">
+                              Full Name is required
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div class="d-flex flex-row align-items-center mb-4">
+                        <div class="form-outline flex-fill mb-0">
+                          <label class="form-label" for="fullName_modal"
+                            >Email</label
+                          >
+                          <input
+                            id="email_modal"
+                            class="form-control"
+                            name="email_modal"
+                            [(ngModel)]="updateUser.email"
+                            [placeholder]="userModal.email"
+                            required
+                            email
+                            #email="ngModel"
+                          />
+                          <div
+                            class="alert-danger"
+                            *ngIf="email.errors && f.submitted"
+                          >
+                            <div *ngIf="email.errors?.['required']">
+                              Email is required
+                            </div>
+                            <div *ngIf="email.errors?.['email']">
+                              Email must be a valid email address
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="form-check form-check-inline">
+                        <input
+                          class="form-check-input"
+                          type="radio"
+                          name="inlineRadioOptions"
+                          [(ngModel)]="role"
+                          id="inlineRadio1"
+                          value="ADMIN"
+                        />
+                        <label class="form-check-label" for="inlineRadio1"
+                          >admin</label
+                        >
+                      </div>
+                      <div class="form-check form-check-inline">
+                        <input
+                          class="form-check-input"
+                          type="radio"
+                          name="inlineRadioOptions"
+                          id="inlineRadio3"
+                          [(ngModel)]="role"
+                          value="USER"
+                        />
+                        <label class="form-check-label" for="inlineRadio3"
+                          >user</label
+                        >
+                      </div>
+                      <div class="modal-footer">
+                        <button
+                          type="button"
+                          class="btn btn-secondary"
+                          data-bs-dismiss="modal"
+                        >
+                          Cancel
+                        </button>
+                        <button type="submit" class="btn btn-primary">
+                          Submit
+                        </button>
+                      </div>
+                    </form>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
