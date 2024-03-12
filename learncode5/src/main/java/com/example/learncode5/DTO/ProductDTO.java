@@ -15,7 +15,9 @@ public class ProductDTO {
     private String manufacturer;
     private int quantity;
     private double price;
+    private String addedBy;
     private CategoryDTO category;
+
 
     public ProductDTO(Product product) {
         this.id= product.getId();

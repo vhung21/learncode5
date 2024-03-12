@@ -32,7 +32,7 @@ export class ProductService {
 
   update(id: number, productName: string, productCode: string, category: {
     id: any
-  }, manufacturer: string, quantity: string, price: string): Observable<any> {
+  }, manufacturer: string, quantity: number, price: number): Observable<any> {
     var product: Product = new Product();
     product.productName= productName;
     product.productCode= productCode;
@@ -45,7 +45,7 @@ export class ProductService {
 
   add(id: number, productName: string, productCode: string, category: {
     id: any
-  }, manufacturer: string, quantity: string, price: string): Observable<any> {
+  }, manufacturer: string, quantity: number, price: number, addedBy: string): Observable<any> {
     var product: Product = new Product();
     product.productName= productName;
     product.productCode= productCode;
@@ -53,6 +53,7 @@ export class ProductService {
     product.manufacturer= manufacturer;
     product.quantity= quantity;
     product.price= price;
+    product.addedBy = addedBy;
     return this.http.post(API + '/add',product);
   }
 }

@@ -3,7 +3,8 @@ export class Product{
   productName !: string;
   productCode !: string;
   manufacturer !: string;
-  quantity !: string;
-  price !: string;
+  quantity !: number;
+  price !: number;
+  addedBy !: string;
   category !: { id: any };
 }

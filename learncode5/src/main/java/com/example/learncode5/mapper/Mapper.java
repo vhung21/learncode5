@@ -23,6 +23,7 @@ public class Mapper {
         dto.setManufacturer(product.getManufacturer());
         dto.setQuantity(product.getQuantity());
         dto.setPrice(product.getPrice());
+        dto.setAddedBy(product.getAddedBy());
 
         // Mapping Category
         if (product.getCategory() != null) {

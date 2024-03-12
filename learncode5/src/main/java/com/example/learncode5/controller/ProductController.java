@@ -25,7 +25,7 @@ public class ProductController {
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasAuthority('ADMIN')")
+    @PreAuthorize("hasAuthority('ADMIN') || hasAuthority('USER') ")
     public ResponseEntity<ResponseObject> delete(@PathVariable long id){
         return productService.deleteProductById(id);
     }
@@ -38,34 +38,18 @@ public class ProductController {
     }
 
     @PostMapping("/{id}")
-    @PreAuthorize("hasAuthority('ADMIN')")
+    @PreAuthorize("hasAuthority('ADMIN') || hasAuthority('USER')")
     public ResponseEntity<ResponseObject> update(@PathVariable long id, @RequestBody ProductDTO productDTO)
     {
-        Long categoryId = productDTO.getCategory().getId();
-        return productService.updateProduct(
-                id,
-                productDTO.getProductName(),
-                productDTO.getProductCode(),
-                productDTO.getManufacturer(),
-                productDTO.getQuantity(),
-                productDTO.getPrice(),
-                categoryId
-        );
+        ResponseEntity<ResponseObject> response = productService.updateProduct(id, productDTO, productDTO.getCategory().getId());
+        return response;
     }
 
     @PostMapping("/add")
-    @PreAuthorize("hasAuthority('ADMIN')")
+    @PreAuthorize("hasAuthority('ADMIN') || hasAuthority('USER')")
     public ResponseEntity<ResponseObject> addProduct(@RequestBody ProductDTO productDTO)
     {
-        Long categoryId = productDTO.getCategory().getId();
-        return productService.addProduct(
-                productDTO.getId(),
-                productDTO.getProductName(),
-                productDTO.getProductCode(),
-                productDTO.getManufacturer(),
-                productDTO.getQuantity(),
-                productDTO.getPrice(),
-                categoryId
-        );
+        ResponseEntity<ResponseObject> response = productService.addProduct(productDTO, productDTO.getCategory().getId());
+        return response;
     }
 }

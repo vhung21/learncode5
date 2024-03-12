@@ -29,10 +29,9 @@ export class ProductComponent {
   constructor(
     private productService: ProductService,
     private authService: AuthService,
-    private tokenService: TokenService,
+    protected tokenService: TokenService,
     private router: Router
   ) {}
-
 
   ngOnInit(): void {
     this.isLogin = this.authService.isLogin;
@@ -68,11 +67,11 @@ export class ProductComponent {
   }
 
   onUpdateModalSubmit() {
-    console.log(this.tokenService.getRole());
-    if (this.tokenService.getRole() !== 'ADMIN') {
-      alert("you don't have permission to do this action");
-      return;
-    }
+    // console.log(this.tokenService.getRole());
+    // if (this.tokenService.getRole() !== 'ADMIN') {
+    //   alert("you don't have permission to do this action");
+    //   return;
+    // }
     var categories: { id: any } = {"id": this.category };
     console.log(
       this.productModal.id,
@@ -99,6 +98,7 @@ export class ProductComponent {
           this.productService.getProductList().subscribe((data) => {
             this.products = data.data;
           });
+          location.reload();
         },
         (error) => {
           this.alertMessage = error.error.message
@@ -114,11 +114,6 @@ export class ProductComponent {
   }
 
   onAddModalSubmit() {
-    console.log(this.tokenService.getRole());
-    if (this.tokenService.getRole() !== 'ADMIN') {
-      alert("you don't have permission to do this action");
-      return;
-    }
     var categories: { id: any } = {"id": this.category };
     console.log(
       this.productModal.id,
@@ -127,6 +122,7 @@ export class ProductComponent {
       this.addProduct.manufacturer,
       this.addProduct.quantity,
       this.addProduct.price,
+      this.addProduct.addedBy,
       categories
     );
     this.productService
@@ -138,6 +134,7 @@ export class ProductComponent {
         this.addProduct.manufacturer,
         this.addProduct.quantity,
         this.addProduct.price,
+        this.addProduct.addedBy,
       )
       .subscribe(
         (data) => {
@@ -145,6 +142,7 @@ export class ProductComponent {
           this.productService.getProductList().subscribe((data) => {
             this.products = data.data;
           });
+          location.reload();
         },
         (error) => {
           this.alertMessage = error.error.message
@@ -154,5 +152,4 @@ export class ProductComponent {
         }
       );
   }
-
 }

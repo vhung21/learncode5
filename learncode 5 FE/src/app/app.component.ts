@@ -12,6 +12,7 @@ const ROLE_KEY = 'auth-role';
 })
 export class AppComponent {
   infoCurrentUser: string = "";
+  infoRoleUser: string = "";
   isLogin:boolean =false;
   constructor(private auService: AuthService,
               private router:Router,
@@ -19,14 +20,15 @@ export class AppComponent {
     this.isLogin=auService.isLogin;
 
   }
-  
+
   ngDoCheck(): void {
     this.isLogin=this.auService.isLogin;
     if (this.isLogin){
-      this.infoCurrentUser=this.tokenService.getUsername() ;
+      this.infoCurrentUser=this.tokenService.getUsername();
+      this.infoRoleUser = this.tokenService.getRole();
     }
   }
-  
+
   logOut(): void {
     this.auService.logOut();
     this.router.navigate(['login'])

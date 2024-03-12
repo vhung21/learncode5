@@ -73,6 +73,7 @@
                   <th class="th-sm">Manufacturer</th>
                   <th class="th-sm">Quantity</th>
                   <th class="th-sm">Price</th>
+                  <th class="th-sm">Added By</th>
                   <th>Action</th>
                 </tr>
                 </thead>
@@ -93,9 +94,11 @@
                   <td>{{ product.manufacturer }}</td>
                   <td>{{ product.quantity }}</td>
                   <td>{{ product.price }}</td>
+                  <td>{{ product.addedBy }}</td>
 
                   <td>
                     <button
+                      *ngIf="tokenService.getRole() === 'ADMIN' || product.addedBy === tokenService.getUsername()"
                       type="button"
                       class="btn btn-primary"
                       data-bs-toggle="modal"
@@ -105,6 +108,7 @@
                       Update
                     </button>
                     <button
+                      *ngIf="tokenService.getRole() === 'ADMIN' || product.addedBy === tokenService.getUsername()"
                       type="button"
                       class="btn btn-danger"
                       style="margin-left: 10px"
@@ -225,6 +229,8 @@
                             name="quantity"
                             [(ngModel)]="updateProduct.quantity"
                             [placeholder]="productModal.quantity"
+                            type="number"
+                            pattern="\d+"
                             required
                             #quantity="ngModel"
                           />
@@ -248,6 +254,8 @@
                             name="price"
                             [(ngModel)]="updateProduct.price"
                             [placeholder]="productModal.price"
+                            type="number"
+                            pattern="\d+"
                             required
                             #price="ngModel"
                           />
@@ -410,6 +418,8 @@
                               class="form-control"
                               name="quantity"
                               [(ngModel)]="addProduct.quantity"
+                              type="number"
+                              pattern="\d+"
                               required
                               #quantity="ngModel"
                             />
@@ -419,6 +429,9 @@
                             >
                               <div *ngIf="quantity.errors?.['required']">
                                 Quantity is required
+                              </div>
+                              <div *ngIf="quantity.errors?.['pattern']">
+                                Please enter a valid quantity (only numbers allowed).
                               </div>
                             </div>
                           </div>
@@ -432,7 +445,9 @@
                               class="form-control"
                               name="price"
                               [(ngModel)]="addProduct.price"
+                              type="number"
                               required
+                              pattern="\d+"
                               #price="ngModel"
                             />
                             <div
@@ -442,7 +457,23 @@
                               <div *ngIf="price.errors?.['required']">
                                 Price is required
                               </div>
+                              <div *ngIf="price.errors?.['pattern']">
+                                Please enter a valid quantity (only numbers allowed).
+                              </div>
                             </div>
+                          </div>
+                        </div>
+
+                        <div class="d-flex flex-row align-items-center mb-4">
+                          <div class="form-outline flex-fill mb-0">
+                            <label class="form-label" for="x">Added By</label>
+                            <input
+                              id="x"
+                              class="form-control"
+                              name="username"
+                              [placeholder]="tokenService.getUsername()"
+                              disabled
+                            />
                           </div>
                         </div>
 

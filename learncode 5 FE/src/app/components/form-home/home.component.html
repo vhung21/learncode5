@@ -44,46 +44,48 @@
 
               <table class="table table-bordered" *ngIf="isLogin === true">
                 <thead>
-                  <tr class="table-success">
-                    <th class="th-sm">Full Name</th>
-                    <th class="th-sm">Username</th>
-                    <th class="th-sm">Email</th>
-                    <th class="th-sm">Role</th>
-                    <th>Action</th>
-                  </tr>
+                <tr class="table-success">
+                  <th class="th-sm">Full Name</th>
+                  <th class="th-sm">Username</th>
+                  <th class="th-sm">Email</th>
+                  <th class="th-sm">Role</th>
+                  <th>Action</th>
+                </tr>
                 </thead>
                 <tbody *ngFor="let user of users">
-                  <tr
-                    *ngIf="
+                <tr
+                  *ngIf="
                       user.fullName.includes(fullNameSearch) &&
                       user.username.includes(usernameSearch) &&
                       user.email.includes(emailSearch)
                     "
-                  >
-                    <td>{{ user.fullName }}</td>
-                    <td>{{ user.username }}</td>
-                    <td>{{ user.email }}</td>
-                    <td>{{ user.roles[0] }}</td>
-                    <td>
-                      <button
-                        type="button"
-                        class="btn btn-primary"
-                        data-bs-toggle="modal"
-                        (click)="onUpdate(user)"
-                        data-bs-target="#staticBackdrop"
-                      >
-                        Update
-                      </button>
-                      <button
-                        type="button"
-                        class="btn btn-danger"
-                        style="margin-left: 10px"
-                        (click)="delete(user)"
-                      >
-                        Delete
-                      </button>
-                    </td>
-                  </tr>
+                >
+                  <td>{{ user.fullName }}</td>
+                  <td>{{ user.username }}</td>
+                  <td>{{ user.email }}</td>
+                  <td>{{ user.roles[0] }}</td>
+                  <td>
+                    <button
+                      *ngIf="tokenService.getRole() === 'ADMIN' || user.username === tokenService.getUsername()"
+                      type="button"
+                      class="btn btn-primary"
+                      data-bs-toggle="modal"
+                      (click)="onUpdate(user)"
+                      data-bs-target="#staticBackdrop"
+                    >
+                      Update
+                    </button>
+                    <button
+                      *ngIf="tokenService.getRole() === 'ADMIN' && user.username !== tokenService.getUsername()"
+                      type="button"
+                      class="btn btn-danger"
+                      style="margin-left: 10px"
+                      (click)="delete(user)"
+                    >
+                      Delete
+                    </button>
+                  </td>
+                </tr>
                 </tbody>
               </table>
             </div>
@@ -134,7 +136,7 @@
                       <div class="d-flex flex-row align-items-center mb-4">
                         <div class="form-outline flex-fill mb-0">
                           <label class="form-label" for="fullName_modal"
-                            >Full Name</label
+                          >Full Name</label
                           >
                           <input
                             id="fullName_modal"
@@ -160,7 +162,7 @@
                       <div class="d-flex flex-row align-items-center mb-4">
                         <div class="form-outline flex-fill mb-0">
                           <label class="form-label" for="fullName_modal"
-                            >Email</label
+                          >Email</label
                           >
                           <input
                             id="email_modal"
@@ -185,7 +187,7 @@
                           </div>
                         </div>
                       </div>
-                      <div class="form-check form-check-inline">
+                      <div *ngIf=" tokenService.getRole() === 'ADMIN'" class="form-check form-check-inline">
                         <input
                           class="form-check-input"
                           type="radio"
@@ -195,10 +197,10 @@
                           value="ADMIN"
                         />
                         <label class="form-check-label" for="inlineRadio1"
-                          >admin</label
+                        >admin</label
                         >
                       </div>
-                      <div class="form-check form-check-inline">
+                      <div  *ngIf=" tokenService.getRole() === 'ADMIN'" class="form-check form-check-inline">
                         <input
                           class="form-check-input"
                           type="radio"
@@ -208,7 +210,7 @@
                           value="USER"
                         />
                         <label class="form-check-label" for="inlineRadio3"
-                          >user</label
+                        >user</label
                         >
                       </div>
                       <div class="modal-footer">

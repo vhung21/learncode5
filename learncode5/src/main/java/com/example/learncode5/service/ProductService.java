@@ -11,6 +11,7 @@ import com.example.learncode5.repository.RoleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -56,9 +57,9 @@ public class ProductService {
         return ResponseEntity.ok(new ResponseObject("success", "deleted successfully", mapper.productToProductDTO(product.get())));
     }
 
-    public ResponseEntity<ResponseObject> updateProduct(Long id, String productName, String productCode, String manufacturer, int quantity, double price, Long categoryId) {
-        Optional<Product> product = productRepository.findProductById(id);
-        if (product.isEmpty()) {
+    public ResponseEntity<ResponseObject> updateProduct(Long id, ProductDTO product , Long categoryId) {
+        Optional<Product> existingProduct = productRepository.findProductById(id);
+        if (existingProduct.isPresent() == false) {
             return ResponseEntity.badRequest().body(
                     new ResponseObject("failed", "id not exists", null)
             );
@@ -67,24 +68,24 @@ public class ProductService {
         Category category = categoryRepository.findById(categoryId)
                 .orElseThrow(() -> new RuntimeException("Category not found"));
 
-        Product product1 = product.get();
-        product1.setProductCode(productCode);
-        product1.setProductName(productName);
-        product1.setManufacturer(manufacturer);
-        product1.setQuantity(quantity);
-        product1.setPrice(price);
+        Product product1 = existingProduct.get();
+        product1.setProductCode(product.getProductCode());
+        product1.setProductName(product.getProductName());
+        product1.setManufacturer(product.getManufacturer());
+        product1.setQuantity(product.getQuantity());
+        product1.setPrice(product.getPrice());
         product1.setCategory(category);
         productRepository.save(product1);
         return ResponseEntity.ok(new ResponseObject("success", "", mapper.productToProductDTO(product1)));
     }
 
-    public ResponseEntity<ResponseObject> addProduct(Long id, String productName, String productCode, String manufacturer, int quantity, double price, Long categoryId) {
-        if (productRepository.existsByProductCode(productCode)) {
+    public ResponseEntity<ResponseObject> addProduct(ProductDTO product, Long categoryId) {
+        if (productRepository.existsByProductCode(product.getProductCode())) {
             return ResponseEntity.badRequest().body(
                     new ResponseObject("failed", "Product with the given product code already exists", null)
             );
         }
-        if (productRepository.existsByProductName(productName)) {
+        if (productRepository.existsByProductName(product.getProductName())) {
             return ResponseEntity.badRequest().body(
                     new ResponseObject("failed", "Product with the given product name already exists", null)
             );
@@ -92,16 +93,19 @@ public class ProductService {
         Category category = categoryRepository.findById(categoryId)
                 .orElseThrow(() -> new RuntimeException("Category not found"));
 
-        Product product = new Product();
+        String addedBy = SecurityContextHolder.getContext().getAuthentication().getName();
 
-        product.setProductCode(productCode);
-        product.setProductName(productName);
-        product.setManufacturer(manufacturer);
-        product.setQuantity(quantity);
-        product.setPrice(price);
-        product.setCategory(category);
+        Product product1 = new Product();
 
-        Product savedProduct = productRepository.save(product);
+        product1.setProductCode(product.getProductCode());
+        product1.setProductName(product.getProductName());
+        product1.setManufacturer(product.getManufacturer());
+        product1.setQuantity(product.getQuantity());
+        product1.setPrice(product.getPrice());
+        product1.setCategory(category);
+        product1.setAddedBy(addedBy);
+
+        Product savedProduct = productRepository.save(product1);
         return ResponseEntity.ok(new ResponseObject("success","", mapper.productToProductDTO(savedProduct)));
     }
 }

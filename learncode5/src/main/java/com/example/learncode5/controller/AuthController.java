@@ -69,11 +69,17 @@ class AuthController {
 
     @PostMapping("registration")
     public ResponseEntity<ResponseObject> signUp(@RequestBody RegistrationRequest registrationRequest) {
-
         if (userRepository.existsByUsername(registrationRequest.getUsername())) {
             return ResponseEntity.badRequest()
                     .body(new ResponseObject("failed", "Username was exist", null));
         }
+
+        String emailRegex = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$";
+        if (!registrationRequest.getEmail().matches(emailRegex)) {
+            return ResponseEntity.badRequest()
+                    .body(new ResponseObject("failed", "Invalid email format", null));
+        }
+
         if (userRepository.existsByEmail(registrationRequest.getEmail()))
             return ResponseEntity.badRequest()
                     .body(new ResponseObject("failed", "Email was exists", null));
@@ -83,6 +89,7 @@ class AuthController {
         user.setUsername(registrationRequest.getUsername());
         user.setPassword(passwordEncoder.encode(registrationRequest.getPassword()));
         user.setEmail(registrationRequest.getEmail());
+
         Set<String> strRole = registrationRequest.getRoles();
         List<Role> roles = new ArrayList<>();
         if (strRole.size() == 0) {
@@ -107,4 +114,5 @@ class AuthController {
         return ResponseEntity.status(HttpStatus.OK)
                 .body(new ResponseObject("success", "User registered successfully!", ""));
     }
+
 }

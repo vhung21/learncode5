@@ -23,6 +23,9 @@ public class Product {
     private int quantity;
     @Column(name = "price", length = 300)
     private double price;
+    @Column(name = "added_by")
+    private String addedBy;
+
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "category_id")
@@ -40,6 +43,7 @@ public class Product {
                 ", manufacturer='" + manufacturer + '\'' +
                 ", quantity=" + quantity +
                 ", price=" + price +
+                ", addedBy='" + addedBy + '\'' +
                 ", category=" + category +
                 '}';
     }

@@ -53,22 +53,25 @@ public class UserService {
         return ResponseEntity.ok(new ResponseObject("success", "get user successfully", mapper.userToUserDTO(user.get())));
     }
 
-    public ResponseEntity<ResponseObject> updateUser(long id, String fullName, String email, List<String> strRole) {
-        Optional<User> user = userRepository.findUserById(id);
-        if (user.isPresent() == false) {
+    public ResponseEntity<ResponseObject> updateUser(long id, UserDTO user, List<String> strRole) {
+
+        Optional<User> existingUser = userRepository.findUserById(id);
+
+        if (existingUser.isPresent() == false) {
             return ResponseEntity.badRequest().body(
                     new ResponseObject("failed", "id not exists", null)
             );
         }
-/*
-        if (userRepository.existsByEmail(email)) {
+
+        String emailRegex = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$";
+        if (!user.getEmail().matches(emailRegex)) {
             return ResponseEntity.badRequest()
-                    .body(new ResponseObject("failed", "Email was exists", null));
+                    .body(new ResponseObject("failed", "Invalid email format", null));
         }
-*/
-        User u = user.get();
-        u.setFullName(fullName);
-        u.setEmail(email);
+
+        User u = existingUser.get();
+        u.setFullName(user.getFullName());
+        u.setEmail(user.getEmail());
 
         List<Role> roles = new ArrayList<>();
         if (strRole.size() == 0) {
