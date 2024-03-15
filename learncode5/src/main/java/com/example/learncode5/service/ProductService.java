@@ -35,77 +35,102 @@ public class ProductService {
     CategoryRepository categoryRepository;
 
     public ResponseEntity<ResponseObject> getProductList() {
-        List<Product> productList = productRepository.findAll();
-        List<ProductDTO> productDTOList = new ArrayList<>();
-        for (Product product : productList) {
-            productDTOList.add(mapper.productToProductDTO(product));
+        try {
+            List<Product> productList = productRepository.findAll();
+            List<ProductDTO> productDTOList = new ArrayList<>();
+            for (Product product : productList) {
+                productDTOList.add(mapper.productToProductDTO(product));
+            }
+            return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject("success", "", productDTOList));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ResponseObject("failed", "An error occurred while fetching product list", null));
         }
-        return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject("success", "", productDTOList));
     }
 
     public ResponseEntity<ResponseObject> getProductByProductName(String product_name) {
-        Optional<Product> product = productRepository.findByProductName(product_name);
-        return product.map(value -> ResponseEntity.ok(new ResponseObject("success", "get user successfully", mapper.productToProductDTO(value)))).orElseGet(() -> ResponseEntity.badRequest().body(new ResponseObject("failed", "product name not exist", product_name)));
+        try {
+            Optional<Product> product = productRepository.findByProductName(product_name);
+            return product.map(value -> ResponseEntity.ok(new ResponseObject("success", "get user successfully", mapper.productToProductDTO(value)))).orElseGet(() -> ResponseEntity.badRequest().body(new ResponseObject("failed", "product name not exist", product_name)));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ResponseObject("failed", "An error occurred while fetching product by name", product_name));
+        }
     }
 
     public ResponseEntity<ResponseObject> deleteProductById(long id) {
-        Optional<Product> product = productRepository.findProductById(id);
-        if (product.isEmpty()) {
-            return ResponseEntity.badRequest().body(new ResponseObject("failed", "id not exist", id));
+        try {
+            Optional<Product> product = productRepository.findProductById(id);
+            if (product.isEmpty()) {
+                return ResponseEntity.badRequest().body(new ResponseObject("failed", "id not exist", id));
+            }
+            productRepository.deleteProductByIdCustom(id);
+            return ResponseEntity.ok(new ResponseObject("success", "deleted successfully", mapper.productToProductDTO(product.get())));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ResponseObject("failed", "An error occurred while deleting product", id));
         }
-        productRepository.deleteProductByIdCustom(id);
-        return ResponseEntity.ok(new ResponseObject("success", "deleted successfully", mapper.productToProductDTO(product.get())));
     }
 
     public ResponseEntity<ResponseObject> updateProduct(Long id, ProductDTO product , Long categoryId) {
-        Optional<Product> existingProduct = productRepository.findProductById(id);
-        if (existingProduct.isPresent() == false) {
-            return ResponseEntity.badRequest().body(
-                    new ResponseObject("failed", "id not exists", null)
-            );
+        try {
+            Optional<Product> existingProduct = productRepository.findProductById(id);
+            if (existingProduct.isPresent() == false) {
+                return ResponseEntity.badRequest().body(
+                        new ResponseObject("failed", "id not exists", null)
+                );
+            }
+
+            Category category = categoryRepository.findById(categoryId)
+                    .orElseThrow(() -> new RuntimeException("Category not found"));
+
+            Product product1 = existingProduct.get();
+            product1.setProductCode(product.getProductCode());
+            product1.setProductName(product.getProductName());
+            product1.setManufacturer(product.getManufacturer());
+            product1.setQuantity(product.getQuantity());
+            product1.setPrice(product.getPrice());
+            product1.setCategory(category);
+            productRepository.save(product1);
+            return ResponseEntity.ok(new ResponseObject("success", "", mapper.productToProductDTO(product1)));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ResponseObject("failed", "An error occurred while updating product", null));
         }
-
-        Category category = categoryRepository.findById(categoryId)
-                .orElseThrow(() -> new RuntimeException("Category not found"));
-
-        Product product1 = existingProduct.get();
-        product1.setProductCode(product.getProductCode());
-        product1.setProductName(product.getProductName());
-        product1.setManufacturer(product.getManufacturer());
-        product1.setQuantity(product.getQuantity());
-        product1.setPrice(product.getPrice());
-        product1.setCategory(category);
-        productRepository.save(product1);
-        return ResponseEntity.ok(new ResponseObject("success", "", mapper.productToProductDTO(product1)));
     }
 
     public ResponseEntity<ResponseObject> addProduct(ProductDTO product, Long categoryId) {
-        if (productRepository.existsByProductCode(product.getProductCode())) {
-            return ResponseEntity.badRequest().body(
-                    new ResponseObject("failed", "Product with the given product code already exists", null)
-            );
+        try {
+            if (productRepository.existsByProductCode(product.getProductCode())) {
+                return ResponseEntity.badRequest().body(
+                        new ResponseObject("failed", "Product with the given product code already exists", null)
+                );
+            }
+            if (productRepository.existsByProductName(product.getProductName())) {
+                return ResponseEntity.badRequest().body(
+                        new ResponseObject("failed", "Product with the given product name already exists", null)
+                );
+            }
+            Category category = categoryRepository.findById(categoryId)
+                    .orElseThrow(() -> new RuntimeException("Category not found"));
+
+            String addedBy = SecurityContextHolder.getContext().getAuthentication().getName();
+
+            Product product1 = new Product();
+
+            product1.setProductCode(product.getProductCode());
+            product1.setProductName(product.getProductName());
+            product1.setManufacturer(product.getManufacturer());
+            product1.setQuantity(product.getQuantity());
+            product1.setPrice(product.getPrice());
+            product1.setCategory(category);
+            product1.setAddedBy(addedBy);
+
+            Product savedProduct = productRepository.save(product1);
+            return ResponseEntity.ok(new ResponseObject("success", "", mapper.productToProductDTO(savedProduct)));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ResponseObject("failed", "An error occurred while add product", null));
         }
-        if (productRepository.existsByProductName(product.getProductName())) {
-            return ResponseEntity.badRequest().body(
-                    new ResponseObject("failed", "Product with the given product name already exists", null)
-            );
-        }
-        Category category = categoryRepository.findById(categoryId)
-                .orElseThrow(() -> new RuntimeException("Category not found"));
-
-        String addedBy = SecurityContextHolder.getContext().getAuthentication().getName();
-
-        Product product1 = new Product();
-
-        product1.setProductCode(product.getProductCode());
-        product1.setProductName(product.getProductName());
-        product1.setManufacturer(product.getManufacturer());
-        product1.setQuantity(product.getQuantity());
-        product1.setPrice(product.getPrice());
-        product1.setCategory(category);
-        product1.setAddedBy(addedBy);
-
-        Product savedProduct = productRepository.save(product1);
-        return ResponseEntity.ok(new ResponseObject("success","", mapper.productToProductDTO(savedProduct)));
     }
 }
