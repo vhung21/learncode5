@@ -64,7 +64,8 @@ class AuthController {
                                 userDetails.getUsername(),
                                 userDetails.getEmail(),
                                 roles)
-                ));
+                )
+        );
     }
 
     @PostMapping("registration")
