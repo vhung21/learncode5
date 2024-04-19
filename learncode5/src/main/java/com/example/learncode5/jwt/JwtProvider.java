@@ -14,7 +14,8 @@ public class JwtProvider {
     private static final Logger logger=  LoggerFactory.getLogger(JwtProvider.class);
     private String jwtSecret="hungnghiem";
     private int jwtExpiration=86400000;
-    public String createToken(Authentication authentication){
+    public String createToken(Authentication authentication)
+    {
         UserDetailsImpl userDetails=(UserDetailsImpl) authentication.getPrincipal();
         return Jwts.builder()
                 .setSubject((userDetails.getUsername()))
@@ -23,7 +24,8 @@ public class JwtProvider {
                 .signWith(SignatureAlgorithm.HS512, jwtSecret)
                 .compact();
     }
-    public boolean validateToken(String token){
+    public boolean validateToken(String token)
+    {
         try {
             Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(token);
             return true;
@@ -40,7 +42,8 @@ public class JwtProvider {
         }
         return false;
     }
-    public String getUserNameFromJwtToken(String token) {
+    public String getUserNameFromJwtToken(String token)
+    {
         return Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(token).getBody().getSubject();
     }
 

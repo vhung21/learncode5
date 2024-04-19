@@ -27,23 +27,31 @@ public class JwtTokenFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, FilterChain filterChain) throws ServletException, IOException {
-        try {
+        try
+        {
             String token = getJwt(httpServletRequest);
             if (token != null && jwtProvider.validateToken(token)) {
                 String username=jwtProvider.getUserNameFromJwtToken(token);
                 UserDetails userDetails = userDetailsService.loadUserByUsername(username);
                 UsernamePasswordAuthenticationToken authenticationToken=
                         new UsernamePasswordAuthenticationToken(userDetails,null,userDetails.getAuthorities());
+                // Tạo một đối tượng đại diện cho việc xác thực người dùng
                 authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(httpServletRequest));
+                // Thiết lập thông tin chi tiết của việc xác thực
+                // HttpServletRequest: cho phép truy xuất các thông tin của yêu cầu HTTP
                 SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+                // Cho biết rằng người dùng đã được xác thực và có quyền truy cập vào các phần của ứng dụng theo quy định
             }
-        } catch (Exception e) {
+        }
+        catch (Exception e)
+        {
             logger.error("Cannot set user authentication: {}", e);
         }
         filterChain.doFilter(httpServletRequest, httpServletResponse);
     }
 
-    private String getJwt(HttpServletRequest request) {
+    private String getJwt(HttpServletRequest request)
+    {
         String authHeader = request.getHeader("Authorization");
         if (authHeader != null && authHeader.startsWith("Bearer"))
             return authHeader.replace("Bearer", "");

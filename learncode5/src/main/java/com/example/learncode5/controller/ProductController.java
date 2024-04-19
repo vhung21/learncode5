@@ -13,7 +13,8 @@ import org.springframework.web.bind.annotation.*;
 public class ProductController {
     private final ProductService productService;
 
-    public ProductController(ProductService productService) {
+    public ProductController(ProductService productService)
+    {
         this.productService = productService;
     }
 
@@ -26,14 +27,14 @@ public class ProductController {
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasAuthority('ADMIN') || hasAuthority('USER') ")
-    public ResponseEntity<ResponseObject> delete(@PathVariable long id){
+    public ResponseEntity<ResponseObject> delete(@PathVariable long id)
+    {
         return productService.deleteProductById(id);
     }
 
     @GetMapping("/{product_name}")
     @PreAuthorize("hasAuthority('ADMIN') || hasAuthority('USER')")
-    public ResponseEntity<ResponseObject> get(@PathVariable String product_name)
-    {
+    public ResponseEntity<ResponseObject> get(@PathVariable String product_name) {
         return productService.getProductByProductName(product_name);
     }
 
@@ -41,7 +42,8 @@ public class ProductController {
     @PreAuthorize("hasAuthority('ADMIN') || hasAuthority('USER')")
     public ResponseEntity<ResponseObject> update(@PathVariable long id, @RequestBody ProductDTO productDTO)
     {
-        ResponseEntity<ResponseObject> response = productService.updateProduct(id, productDTO, productDTO.getCategory().getId());
+        productDTO.setId(id);
+        ResponseEntity<ResponseObject> response = productService.updateProduct(productDTO, productDTO.getCategory().getId());
         return response;
     }
 

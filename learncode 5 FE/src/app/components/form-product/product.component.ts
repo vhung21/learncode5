@@ -1,17 +1,17 @@
-import { Component } from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import {AuthService} from "../../_services/auth.service";
 import {TokenService} from "../../_services/token.service";
 import {Router} from "@angular/router";
 import {Product} from "../../models/Product";
 import {ProductService} from "../../_services/product.service";
-import {User} from "../../models/User";
+import {Subscription} from "rxjs";
 
 @Component({
   selector: 'product',
   templateUrl: './product.component.html',
   styleUrls: ['./product.component.scss'],
 })
-export class ProductComponent {
+export class ProductComponent implements OnInit, OnDestroy{
   productNameSearch: string = '';
   productCodeSearch: string = '';
   categorySearch: string = '';
@@ -25,6 +25,7 @@ export class ProductComponent {
   updateProduct: Product = new Product();
   addProduct: Product = new Product();
   alertMessage: string = '';
+  productSubscription: Subscription | undefined;
 
   constructor(
     private productService: ProductService,
@@ -39,10 +40,21 @@ export class ProductComponent {
     if (this.isLogin === false) {
       this.router.navigate(['/login']);
     }
-    this.productService.getProductList().subscribe((data: { data: any }) => {
+    this.productSubscription = this.productService.getProductList().subscribe((data: { data: any }) => {
       this.products = data.data;
       console.log(this.products);
-    });
+    },
+      (error) => {
+        console.error('Error fetching products:', error);
+      }
+      );
+  }
+
+  ngOnDestroy(): void {
+    if (this.productSubscription) {
+      this.productSubscription.unsubscribe();
+      console.log("1");
+    }
   }
 
   onUpdate(product: any) {

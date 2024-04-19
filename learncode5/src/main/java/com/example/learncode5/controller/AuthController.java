@@ -40,7 +40,8 @@ class AuthController {
     JwtProvider jwtProvider;
 
     @PostMapping("login")
-    public ResponseEntity<ResponseObject> login(@RequestBody LoginRequest loginRequest) {
+    public ResponseEntity<ResponseObject> login(@RequestBody LoginRequest loginRequest)
+    {
         if (userRepository.existsByUsername(loginRequest.getUsername()) == false) {
             return ResponseEntity.badRequest()
                     .body(new ResponseObject("failed", "Username was not exists", null));

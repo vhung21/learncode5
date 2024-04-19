@@ -74,9 +74,9 @@ public class UserService {
         }
     }
 
-    public ResponseEntity<ResponseObject> updateUser(long id, UserDTO user, List<String> strRole) {
+    public ResponseEntity<ResponseObject> updateUser(UserDTO user, List<String> strRole) {
         try {
-            Optional<User> existingUser = userRepository.findUserById(id);
+            Optional<User> existingUser = userRepository.findUserById(user.getId());
 
             if (existingUser.isPresent() == false) {
                 return ResponseEntity.badRequest().body(

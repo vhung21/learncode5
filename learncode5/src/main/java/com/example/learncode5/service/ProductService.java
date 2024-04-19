@@ -72,9 +72,9 @@ public class ProductService {
         }
     }
 
-    public ResponseEntity<ResponseObject> updateProduct(Long id, ProductDTO product , Long categoryId) {
+    public ResponseEntity<ResponseObject> updateProduct(ProductDTO product , Long categoryId) {
         try {
-            Optional<Product> existingProduct = productRepository.findProductById(id);
+            Optional<Product> existingProduct = productRepository.findProductById(product.getId());
             if (existingProduct.isPresent() == false) {
                 return ResponseEntity.badRequest().body(
                         new ResponseObject("failed", "id not exists", null)

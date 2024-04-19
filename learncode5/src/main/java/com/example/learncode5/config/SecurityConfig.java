@@ -42,14 +42,18 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     }
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http.cors().and().csrf().disable()
+        http.cors()// cấu hình các cài đặt CORS cho các request HTTP được gửi đến ứng dụng
+                .and()
+                .csrf().disable() // tat csrf
                 .authorizeRequests().antMatchers("/auth/login").permitAll()
                 .and().authorizeRequests().antMatchers("/auth/registration").permitAll()
                 .and().authorizeRequests().antMatchers("/users").permitAll()
                 .and().exceptionHandling()
+                // xử lý ngoại lệ khi xác thực thất bại
                 .authenticationEntryPoint(jwtEntryPoint)
+                // xử lý các yêu cầu từ người dùng chưa được xác thực hoặc không có quyền truy cập
                 .and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+                // không lưu trữ trạng thái phiên giữa các yêu cầu
         http.addFilterBefore(jwtTokenFilter, UsernamePasswordAuthenticationFilter.class);
     }
 }
-
